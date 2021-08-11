@@ -25,14 +25,6 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController
 
-//        val button: Button = findViewById(R.id.button)
-
-//        button.setOnClickListener {
-//            GlobalScope.launch {
-//                val response = MovieService().api.getMovies(query = etMovieName.text.toString())
-//                Log.d("MAINACT", response.toString())
-//            }
-//        }
         NavigationUI.setupActionBarWithNavController(this, navController)
     }
 

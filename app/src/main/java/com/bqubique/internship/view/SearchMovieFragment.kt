@@ -11,15 +11,21 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bqubique.internship.R
+import com.bqubique.internship.adapters.MoviesAdapter
+import com.bqubique.internship.model.Movie
 import com.bqubique.internship.service.MovieService
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class SearchMovieFragment : Fragment() {
     private lateinit var textField: TextInputEditText
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +40,8 @@ class SearchMovieFragment : Fragment() {
 
         val fab: FloatingActionButton = view.findViewById(R.id.fabSearch)
         textField = view.findViewById(R.id.tietMovieSearch)
+        recyclerView = view.findViewById(R.id.rvResults)
+        recyclerView.layoutManager = GridLayoutManager(view.context, 2, RecyclerView.VERTICAL, false)
 
         textField.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
@@ -53,19 +61,21 @@ class SearchMovieFragment : Fragment() {
             ) {
                 if (count % 3 == 0) {
                     Log.d("MAINACT", s.toString());
-                    GlobalScope.launch {
-                        searchMovie(s.toString())
+                    lateinit var movieList : Movie
+                    var s = GlobalScope.launch {
+                        movieList = searchMovie(s.toString())
                     }
+                    runBlocking {
+                        s.join()
+                    }
+                    recyclerView.adapter = MoviesAdapter(ArrayList(movieList.results))
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {
-//                    Log.d("MAINACT",s.toString());
             }
 
         })
-
-
 
         fab.setOnClickListener {
             val action: NavDirections =
@@ -75,11 +85,16 @@ class SearchMovieFragment : Fragment() {
 
     }
 
-    fun searchMovie(movieName: String?) {
-        GlobalScope.launch {
-            val response = MovieService().api.getMovies(query = textField.text.toString())
+    fun searchMovie(movieName: String?) : Movie{
+        lateinit var response: Movie
+        var s = GlobalScope.launch {
+            response =  MovieService().api.getMovies(query = textField.text.toString())
             Log.d("MAINACT", response.toString())
         }
+        runBlocking {
+            s.join()
+        }
+        return response
     }
 
 }
