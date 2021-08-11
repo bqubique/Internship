@@ -15,7 +15,7 @@ class MovieService {
             .build()
     }
 
-    val api : MovieApi by lazy {
+    val api: MovieApi by lazy {
         retrofit.create(MovieApi::class.java)
     }
 }
