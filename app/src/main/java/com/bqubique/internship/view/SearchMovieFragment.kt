@@ -87,9 +87,10 @@ class SearchMovieFragment : Fragment() {
 
     fun searchMovie(movieName: String?) : Movie{
         lateinit var response: Movie
-        var s = GlobalScope.launch {
+        val s = GlobalScope.launch {
             response =  MovieService().api.getMovies(query = textField.text.toString())
             Log.d("MAINACT", response.toString())
+
         }
         runBlocking {
             s.join()

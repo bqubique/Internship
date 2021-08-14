@@ -12,8 +12,11 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.size.Scale
 import com.bqubique.internship.R
+import com.bqubique.internship.model.MovieDetails
+import com.bqubique.internship.service.MovieService
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MovieFragment : Fragment() {
     private val args by navArgs<MovieFragmentArgs>()
@@ -31,19 +34,27 @@ class MovieFragment : Fragment() {
         val tvMovieTitle = requireView().findViewById<TextView>(R.id.tvMovieTitle)
         val ivMovieImage = requireView().findViewById<ImageView>(R.id.ivMovieBackgroundImage)
 
-        Log.d("MOVIE_FRAGMENT", "${args.selectedMovie.posterPath}")
+        Log.d("MOVIE_FRAGMENT", args.selectedMovie.posterPath)
         ivMovieImage.load("https://image.tmdb.org/t/p/w500${args.selectedMovie.posterPath}"){
             scale(Scale.FIT)
         }
         ivMovieImage.scaleType = ImageView.ScaleType.FIT_CENTER
+        val movieDetails = getMovieDetails(args.selectedMovie.id.toString())
 
-
+        Log.d("MOVIE_FRAG", movieDetails.title.toString())
         tvMovieTitle.text = args.selectedMovie.id.toString()
     }
 
-    fun getMovieDetails(){
-        GlobalScope.launch {
+    fun getMovieDetails(movieId: String): MovieDetails{
+        lateinit var retrievedDetails: MovieDetails
+        val wait = GlobalScope.launch {
+            retrievedDetails =  MovieService().api.getMovieDetails(movieId = args.selectedMovie.id.toString())
 
         }
+        runBlocking {
+            wait.join()
+        }
+        return retrievedDetails
+
     }
 }
