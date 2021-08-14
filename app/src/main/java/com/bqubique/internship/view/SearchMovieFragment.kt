@@ -78,9 +78,9 @@ class SearchMovieFragment : Fragment() {
         })
 
         fab.setOnClickListener {
-            val action: NavDirections =
-                SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment()
-            Navigation.findNavController(it).navigate(action)
+//            val action: NavDirections =
+//                SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment()
+//            Navigation.findNavController(it).navigate(action)
         }
 
     }

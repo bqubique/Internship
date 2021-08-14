@@ -23,5 +23,8 @@
         <action
             android:id="@+id/action_movieFragment_to_searchMovieFragment"
             app:destination="@id/searchMovieFragment" />
+        <argument
+            android:name="selectedMovie"
+            app:argType="com.bqubique.internship.model.Result" />
     </fragment>
 </navigation>

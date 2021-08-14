@@ -1,9 +1,11 @@
 package com.bqubique.internship.model
 
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
-
+@Parcelize
 data class Result(
     @SerializedName("adult")
     val adult: Boolean,
@@ -33,4 +35,4 @@ data class Result(
     val voteAverage: Double,
     @SerializedName("vote_count")
     val voteCount: Int
-)
+) : Parcelable
