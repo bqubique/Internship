@@ -12,49 +12,48 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.size.Scale
 import com.bqubique.internship.R
+import com.bqubique.internship.databinding.FragmentMovieBinding
 import com.bqubique.internship.model.MovieDetails
 import com.bqubique.internship.service.MovieService
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import org.w3c.dom.Text
 
 class MovieFragment : Fragment() {
+    private lateinit var binding: FragmentMovieBinding
+
     private val args by navArgs<MovieFragmentArgs>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_movie, container, false)
+        binding = FragmentMovieBinding.inflate(layoutInflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tvMovieTitle = requireView().findViewById<TextView>(R.id.tvMovieTitle)
-        val ivMovieImage = requireView().findViewById<ImageView>(R.id.ivMovieBackgroundImage)
-
         Log.d("MOVIE_FRAGMENT", args.selectedMovie.posterPath)
-        ivMovieImage.load("https://image.tmdb.org/t/p/w500${args.selectedMovie.posterPath}"){
+        binding.ivMovieBackgroundImage.load("https://image.tmdb.org/t/p/w500${args.selectedMovie.posterPath}") {
             scale(Scale.FIT)
         }
-        ivMovieImage.scaleType = ImageView.ScaleType.FIT_CENTER
+        binding.ivMovieBackgroundImage.scaleType = ImageView.ScaleType.FIT_CENTER
         val movieDetails = getMovieDetails(args.selectedMovie.id.toString())
 
         Log.d("MOVIE_FRAG", movieDetails.title.toString())
-        tvMovieTitle.text = args.selectedMovie.id.toString()
+        binding.tvMovieTitle.text = movieDetails.title
+        binding.tvImdbScore.text = "IMDB ID: ${movieDetails.imdbId}"
     }
 
-    fun getMovieDetails(movieId: String): MovieDetails{
+    private fun getMovieDetails(movieId: String): MovieDetails {
         lateinit var retrievedDetails: MovieDetails
-        val wait = GlobalScope.launch {
-            retrievedDetails =  MovieService().api.getMovieDetails(movieId = args.selectedMovie.id.toString())
-
+        val wait = CoroutineScope(Dispatchers.IO).launch {
+            retrievedDetails =
+                MovieService().api.getMovieDetails(movieId = args.selectedMovie.id.toString())
         }
         runBlocking {
             wait.join()
         }
         return retrievedDetails
-
     }
 }

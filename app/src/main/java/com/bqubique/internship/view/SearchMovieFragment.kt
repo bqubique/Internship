@@ -8,42 +8,36 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import androidx.navigation.NavDirections
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bqubique.internship.R
 import com.bqubique.internship.adapters.MoviesAdapter
+import com.bqubique.internship.databinding.FragmentSearchMovieBinding
 import com.bqubique.internship.model.Movie
 import com.bqubique.internship.service.MovieService
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+
+import kotlinx.coroutines.*
 
 class SearchMovieFragment : Fragment() {
-    private lateinit var textField: TextInputEditText
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: FragmentSearchMovieBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_search_movie, container, false)
+        binding = FragmentSearchMovieBinding.inflate(layoutInflater)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
 
-        val fab: FloatingActionButton = view.findViewById(R.id.fabSearch)
-        textField = view.findViewById(R.id.tietMovieSearch)
-        recyclerView = view.findViewById(R.id.rvResults)
-        recyclerView.layoutManager = GridLayoutManager(view.context, 2, RecyclerView.VERTICAL, false)
 
-        textField.addTextChangedListener(object : TextWatcher {
+        binding.rvResults.layoutManager =
+            GridLayoutManager(view.context, 2, RecyclerView.VERTICAL, false)
+
+        binding.tietMovieSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence?,
                 start: Int,
@@ -60,15 +54,8 @@ class SearchMovieFragment : Fragment() {
                 count: Int
             ) {
                 if (count % 3 == 0) {
-                    Log.d("MAINACT", s.toString());
-                    lateinit var movieList : Movie
-                    var s = GlobalScope.launch {
-                        movieList = searchMovie(s.toString())
-                    }
-                    runBlocking {
-                        s.join()
-                    }
-                    recyclerView.adapter = MoviesAdapter(ArrayList(movieList.results))
+                    var s = searchMovie(s.toString())
+                    binding.rvResults.adapter = MoviesAdapter(ArrayList(s.results))
                 }
             }
 
@@ -77,18 +64,15 @@ class SearchMovieFragment : Fragment() {
 
         })
 
-        fab.setOnClickListener {
-//            val action: NavDirections =
-//                SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment()
-//            Navigation.findNavController(it).navigate(action)
+        binding.fabSearch.setOnClickListener {
         }
 
     }
 
-    fun searchMovie(movieName: String?) : Movie{
+    fun searchMovie(movieName: String?): Movie {
         lateinit var response: Movie
-        val s = GlobalScope.launch {
-            response =  MovieService().api.getMovies(query = textField.text.toString())
+        val s = CoroutineScope(Dispatchers.IO).launch {
+            response = MovieService().api.getMovies(query = movieName)
             Log.d("MAINACT", response.toString())
 
         }
