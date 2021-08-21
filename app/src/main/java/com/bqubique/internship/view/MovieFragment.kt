@@ -9,15 +9,23 @@ import android.widget.ImageView
 import androidx.navigation.fragment.navArgs
 import coil.load
 import coil.size.Scale
+import com.bqubique.internship.api.MovieApi
 import com.bqubique.internship.databinding.FragmentMovieBinding
 import com.bqubique.internship.model.MovieDetails
 import com.bqubique.internship.service.MovieService
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MovieFragment : Fragment() {
     private lateinit var binding: FragmentMovieBinding
 
+    @Inject
+    lateinit var movieApi: MovieApi
+
     private val args by navArgs<MovieFragmentArgs>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,9 +37,7 @@ class MovieFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.ivMovieBackgroundImage.load("https://image.tmdb.org/t/p/w500${args.selectedMovie.posterPath}") {
-            scale(Scale.FIT)
-        }
+        binding.ivMovieBackgroundImage.load("https://image.tmdb.org/t/p/w500${args.selectedMovie.posterPath}")
         binding.ivMovieBackgroundImage.scaleType = ImageView.ScaleType.FIT_CENTER
         val movieDetails = retrieveMovieDetails(args.selectedMovie.id.toString())
 
@@ -43,7 +49,7 @@ class MovieFragment : Fragment() {
         lateinit var retrievedDetails: MovieDetails
         val wait = CoroutineScope(Dispatchers.IO).launch {
             retrievedDetails =
-                MovieService().api.getMovieDetails(movieId = movieId)
+                movieApi.getMovieDetails(movieId = movieId)
         }
         runBlocking {
             wait.join()

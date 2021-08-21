@@ -30,15 +30,12 @@ class SearchMovieFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentSearchMovieBinding.inflate(layoutInflater)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-
-
         binding.rvResults.layoutManager =
             GridLayoutManager(view.context, 2, RecyclerView.VERTICAL, false)
 

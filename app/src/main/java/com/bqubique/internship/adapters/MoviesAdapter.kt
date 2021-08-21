@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.bqubique.internship.R
 import com.bqubique.internship.databinding.ItemMovieBinding
 import com.bqubique.internship.model.Result
@@ -19,15 +20,23 @@ class MoviesAdapter(var movies: ArrayList<Result>) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        return MovieViewHolder(ItemMovieBinding.inflate(LayoutInflater.from(parent.context),parent, false))
+        return MovieViewHolder(
+            ItemMovieBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.binding.tvMovieName.text = movies[position].originalTitle
-        holder.binding.itemLayout.setOnClickListener{
-            val action = SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(movies[position])
+        holder.binding.itemLayout.setOnClickListener {
+            val action =
+                SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(movies[position])
             Navigation.findNavController(it).navigate(action)
         }
+        holder.binding.ivMovieBackgroundImage.load("https://image.tmdb.org/t/p/w500${movies[position].posterPath}")
     }
 
     override fun getItemCount() = movies.size
