@@ -9,34 +9,28 @@ import androidx.navigation.NavDirections
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bqubique.internship.R
+import com.bqubique.internship.databinding.ItemMovieBinding
 import com.bqubique.internship.model.Result
 import com.bqubique.internship.view.SearchMovieFragmentDirections
 
-class MoviesAdapter(var movies: ArrayList<Result>) : RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
+class MoviesAdapter(var movies: ArrayList<Result>) :
+    RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
+    inner class MovieViewHolder(val binding: ItemMovieBinding) :
+        RecyclerView.ViewHolder(binding.root)
 
-    inner class MovieViewHolder(view: View) : RecyclerView.ViewHolder(view){
-        private val movieName: TextView = view.findViewById(R.id.tvMovieName)
-        private val movieImage: ImageView = view.findViewById(R.id.ivMovieBackgroundImage)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
+        return MovieViewHolder(ItemMovieBinding.inflate(LayoutInflater.from(parent.context),parent, false))
+    }
 
-        fun bind(result: Result) {
-            movieName.text = result.originalTitle
-            movieName.setOnClickListener{
-
-                val action : NavDirections = SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(result)
-                Navigation.findNavController(it).navigate(action)
-            }
+    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
+        holder.binding.tvMovieName.text = movies[position].originalTitle
+        holder.binding.itemLayout.setOnClickListener{
+            val action = SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(movies[position])
+            Navigation.findNavController(it).navigate(action)
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)= MovieViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.item_movie, parent, false))
+    override fun getItemCount() = movies.size
 
 
-    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.bind(movies[position])
-    }
-
-    override fun getItemCount(): Int {
-        return movies.size
-    }
 }

@@ -25,7 +25,6 @@ class SearchMovieFragment : Fragment() {
     @Inject
     lateinit var t2: MovieApi
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

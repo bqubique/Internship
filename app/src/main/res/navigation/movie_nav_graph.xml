@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/searchMovieFragment"
         android:name="com.bqubique.internship.view.SearchMovieFragment"
-        android:label="fragment_search_movie"
+        android:label="Search Movie"
         tools:layout="@layout/fragment_search_movie" >
 
         <action
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/movieFragment"
         android:name="com.bqubique.internship.view.MovieFragment"
-        android:label="fragment_movie"
+        android:label="Movie Details"
         tools:layout="@layout/fragment_movie" >
         <action
             android:id="@+id/action_movieFragment_to_searchMovieFragment"
