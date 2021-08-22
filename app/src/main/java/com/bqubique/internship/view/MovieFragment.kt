@@ -6,16 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.navArgs
 import coil.load
-import coil.size.Scale
+import com.bqubique.internship.R
 import com.bqubique.internship.api.MovieApi
 import com.bqubique.internship.databinding.FragmentMovieBinding
 import com.bqubique.internship.model.MovieDetails
-import com.bqubique.internship.service.MovieService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 class MovieFragment : Fragment() {
@@ -24,35 +25,36 @@ class MovieFragment : Fragment() {
     @Inject
     lateinit var movieApi: MovieApi
 
+    @Inject
+    @Named("movieImageBaseUrl")
+    lateinit var movieImageBaseUrl: String
+
     private val args by navArgs<MovieFragmentArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentMovieBinding.inflate(layoutInflater)
+        binding = DataBindingUtil.inflate(layoutInflater, R.layout.fragment_movie, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.ivMovieBackgroundImage.load("https://image.tmdb.org/t/p/w500${args.selectedMovie.posterPath}")
+        binding.ivMovieBackgroundImage.load("$movieImageBaseUrl${args.selectedMovie.posterPath}")
         binding.ivMovieBackgroundImage.scaleType = ImageView.ScaleType.FIT_CENTER
         val movieDetails = retrieveMovieDetails(args.selectedMovie.id.toString())
-
-        binding.tvMovieTitle.text = movieDetails.title
-        binding.tvImdbScore.text = "IMDB ID: ${movieDetails.imdbId}"
+        binding.movie = movieDetails
     }
 
     private fun retrieveMovieDetails(movieId: String): MovieDetails {
         lateinit var retrievedDetails: MovieDetails
-        val wait = CoroutineScope(Dispatchers.IO).launch {
-            retrievedDetails =
-                movieApi.getMovieDetails(movieId = movieId)
-        }
+        
         runBlocking {
-            wait.join()
+            CoroutineScope(Dispatchers.IO).launch {
+                retrievedDetails =
+                    movieApi.getMovieDetails(movieId = movieId)
+            }.join()
         }
         return retrievedDetails
     }

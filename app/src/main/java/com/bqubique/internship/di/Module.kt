@@ -1,13 +1,13 @@
-package com.bqubique.internship.util
+package com.bqubique.internship.di
 
 import com.bqubique.internship.api.MovieApi
-import com.bqubique.internship.util.Constants.Companion.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -16,9 +16,22 @@ object Module {
 
     @Singleton
     @Provides
-    fun provideMovieApi(): MovieApi {
+    @Named("movieApiBaseUrl")
+    fun provideMovieApiBaseUrl() = "https://api.themoviedb.org"
+
+    @Singleton
+    @Provides
+    @Named("movieImageBaseUrl")
+    fun provideMovieImageBaseUrl() = "https://image.tmdb.org/t/p/w500"
+
+    @Singleton
+    @Provides
+    fun provideMovieApi(
+        @Named("movieApiBaseUrl")
+        baseUrl: String?
+    ): MovieApi {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(MovieApi::class.java)

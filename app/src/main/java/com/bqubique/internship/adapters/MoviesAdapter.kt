@@ -1,5 +1,6 @@
 package com.bqubique.internship.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +13,14 @@ import coil.load
 import com.bqubique.internship.R
 import com.bqubique.internship.databinding.ItemMovieBinding
 import com.bqubique.internship.model.Result
+import com.bqubique.internship.view.ItemOnClickListener
 import com.bqubique.internship.view.SearchMovieFragmentDirections
+import javax.inject.Inject
+import javax.inject.Named
 
 class MoviesAdapter(var movies: ArrayList<Result>) :
-    RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>() {
+    RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>(), ItemOnClickListener {
+
     inner class MovieViewHolder(val binding: ItemMovieBinding) :
         RecyclerView.ViewHolder(binding.root)
 
@@ -31,15 +36,21 @@ class MoviesAdapter(var movies: ArrayList<Result>) :
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         holder.binding.tvMovieName.text = movies[position].originalTitle
-        holder.binding.itemLayout.setOnClickListener {
-            val action =
-                SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(movies[position])
-            Navigation.findNavController(it).navigate(action)
-        }
+        holder.binding.listener = this
+        holder.binding.movieDetails = movies[position]
         holder.binding.ivMovieBackgroundImage.load("https://image.tmdb.org/t/p/w500${movies[position].posterPath}")
     }
 
     override fun getItemCount() = movies.size
 
-
+    override fun onItemClick(view: View) {
+        for(movie in movies){
+            if(movie.id == view.tag){
+                Log.d("MOVIEADAPTER", ":::Here:::")
+                val action =
+                    SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(movie)
+                Navigation.findNavController(view).navigate(action)
+            }
+        }
+    }
 }

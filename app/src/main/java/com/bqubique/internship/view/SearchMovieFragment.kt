@@ -17,13 +17,14 @@ import com.bqubique.internship.model.Movie
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import javax.inject.Named
 
 @AndroidEntryPoint
 class SearchMovieFragment : Fragment() {
     private lateinit var binding: FragmentSearchMovieBinding
 
     @Inject
-    lateinit var t2: MovieApi
+    lateinit var movieApi: MovieApi
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,21 +66,16 @@ class SearchMovieFragment : Fragment() {
             }
 
         })
-
-        binding.fabSearch.setOnClickListener {
-        }
-
     }
 
     fun searchMovie(movieName: String?): Movie {
         lateinit var response: Movie
-        val s = CoroutineScope(Dispatchers.IO).launch {
-            response = t2.getMovies(query = movieName)
-            Log.d("MAINACT", response.toString())
 
-        }
         runBlocking {
-            s.join()
+            CoroutineScope(Dispatchers.IO).launch {
+                response = movieApi.getMovies(query = movieName)
+
+            }.join()
         }
         return response
     }
