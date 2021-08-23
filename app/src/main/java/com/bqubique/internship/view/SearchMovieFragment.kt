@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -32,7 +33,7 @@ class SearchMovieFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSearchMovieBinding.inflate(layoutInflater)
         return binding.root
     }
@@ -60,31 +61,36 @@ class SearchMovieFragment : Fragment() {
                 before: Int,
                 count: Int
             ) {
-                if (count % 3 == 0) {
-                    movieListViewModel.refresh(s.toString())
-                    movieListViewModel.loading.observe(
-                        viewLifecycleOwner,
-                        Observer { loading ->
-                            loading?.let {
-                                if (it)
-                                    binding.progressBar.visibility = View.VISIBLE
-                                else
-                                    binding.progressBar.visibility = View.GONE
-
-                            }
-                        }
-                    )
-                    movieListViewModel.movieList.observe(viewLifecycleOwner,
-                        Observer { list ->
-                            list?.let {
-                                binding.rvResults.adapter = MoviesAdapter(ArrayList(it))
-                            }
-                        })
-                }
+                searchMovie(s.toString(), count)
             }
 
-            override fun afterTextChanged(s: Editable?) {
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
+    }
+
+    fun searchMovie(s: String, count: Int) {
+        if (count > 0) {
+            if (count % 3 == 0) {
+                movieListViewModel.refresh(s)
+                movieListViewModel.loading.observe(
+                    viewLifecycleOwner,
+                    Observer { loading ->
+                        loading?.let {
+                            if (it)
+                                binding.progressBar.visibility = View.VISIBLE
+                            else
+                                binding.progressBar.visibility = View.GONE
+
+                        }
+                    }
+                )
+                movieListViewModel.movieList.observe(viewLifecycleOwner,
+                    Observer { list ->
+                        list?.let {
+                            binding.rvResults.adapter = MoviesAdapter(ArrayList(it))
+                        }
+                    })
+            }
+        }
     }
 }

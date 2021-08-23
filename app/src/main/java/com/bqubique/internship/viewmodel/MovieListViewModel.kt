@@ -15,23 +15,22 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
     val movieApi: MovieApi
-) : ViewModel()  {
+) : ViewModel() {
     val movieList = MutableLiveData<List<Result>>()
     val loading = MutableLiveData<Boolean>()
     val error = MutableLiveData<Boolean>()
 
-    fun refresh(movieName: String?){
+    fun refresh(movieName: String?) {
         loading.value = true
         searchMovie(movieName)
     }
 
-    fun searchMovie(movieName: String?){
+    private fun searchMovie(movieName: String?) {
         lateinit var response: Movie
 
         runBlocking {
             CoroutineScope(Dispatchers.IO).launch {
                 response = movieApi.getMovies(query = movieName)
-
             }.join()
         }
         response.let {

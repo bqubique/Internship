@@ -44,8 +44,8 @@ class MoviesAdapter(var movies: ArrayList<Result>) :
     override fun getItemCount() = movies.size
 
     override fun onItemClick(view: View) {
-        for(movie in movies){
-            if(movie.id == view.tag){
+        for (movie in movies) {
+            if (movie.id == view.tag) {
                 val action =
                     SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(movie)
                 Navigation.findNavController(view).navigate(action)
