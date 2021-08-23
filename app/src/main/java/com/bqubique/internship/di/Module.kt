@@ -31,7 +31,7 @@ object Module {
         baseUrl: String?
     ): MovieApi {
         return Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(baseUrl!!)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(MovieApi::class.java)

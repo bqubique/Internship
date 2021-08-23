@@ -46,7 +46,6 @@ class MoviesAdapter(var movies: ArrayList<Result>) :
     override fun onItemClick(view: View) {
         for(movie in movies){
             if(movie.id == view.tag){
-                Log.d("MOVIEADAPTER", ":::Here:::")
                 val action =
                     SearchMovieFragmentDirections.actionSearchMovieFragmentToMovieFragment(movie)
                 Navigation.findNavController(view).navigate(action)
